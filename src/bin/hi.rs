@@ -13,7 +13,7 @@ use embassy_executor::Spawner;
 use {defmt_rtt as _, panic_probe as _};
 use embassy_rp::gpio::{Input, Pull};
 use embassy_time::{Timer, Duration}; 
-use embassy_futures::select::select;
+use embassy_futures::select::{select, select4};
 
 // Use the logging macros provided by defmt.
 #[allow(unused)]
@@ -34,15 +34,11 @@ async fn main(_spawner: Spawner) {
 
 
     loop {
-        select(
+        select4(
             sw4.wait_for_low(),
-            select(
-                sw5.wait_for_low(),
-                select(
-                    sw6.wait_for_low(),
-                    sw7.wait_for_low(),
-                ),
-            ),
+            sw5.wait_for_low(),
+            sw6.wait_for_low(),
+            sw7.wait_for_low()
         ).await;
 
         defmt::info!("I/O CTL");
