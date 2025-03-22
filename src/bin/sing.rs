@@ -26,7 +26,7 @@ async fn main(_spawner: Spawner) {
 
 
     /// Beats per minute.
-    const TEMPO: u64 = 250;
+    const TEMPO: u64 = 100;
     /// A whole note duration in milliseconds.
     const WHOLE_NOTE: u64 = 4 * (60_000 / TEMPO);
     /// The microcontroller clock frequency
@@ -59,7 +59,7 @@ async fn main(_spawner: Spawner) {
                 
                 
                 let note_frequency = note as u64;
-                let top = (CLOCK_FREQ / PWM_DIV) / note_frequency - 1;
+                let top = CLOCK_FREQ / (PWM_DIV * note_frequency) - 1;
                
                // Set PWM config
                 buzzer_cfg.top = top as u16;
