@@ -13,6 +13,8 @@ use embassy_executor::Spawner;
 use {defmt_rtt as _, panic_probe as _};
 use embassy_rp::gpio::{Input, Pull};
 use embassy_time::{Timer, Duration}; 
+use embassy_futures::select::select;
+
 // Use the logging macros provided by defmt.
 #[allow(unused)]
 use defmt::*;
@@ -31,11 +33,21 @@ async fn main(_spawner: Spawner) {
     let mut sw7 = Input::new(p.PIN_5, Pull::Up);  // GP5
 
 
-
     loop {
-        sw4.wait_for_low().await;
-        defmt::info!("Butonul SW4 a fost apasat");
-        while sw4.is_low() {
+        select(
+            sw4.wait_for_low(),
+            select(
+                sw5.wait_for_low(),
+                select(
+                    sw6.wait_for_low(),
+                    sw7.wait_for_low(),
+                ),
+            ),
+        ).await;
+
+        defmt::info!("I/O CTL");
+
+        while sw4.is_low() || sw5.is_low() || sw6.is_low() || sw7.is_low() {
             Timer::after(Duration::from_millis(1)).await;
         }
     }
