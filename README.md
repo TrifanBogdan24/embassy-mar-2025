@@ -5,7 +5,7 @@
 
 
 
-# 🙋‍♂️ What I did in this Rust Workshop
+# 🙋‍♂️ What I did at this Rust Workshop
 
 I enhanced my understanding of **Rust** and programming an **MCU** in **embedded systems**
 by playing with a Rasberry Pi Pico board, the same used in the [PM Rust laboratories](https://pmrust.pages.upb.ro/).
@@ -65,7 +65,44 @@ to detect when any of these buttons is pressed
     and once triggered, I logged the name of my team, *I/O CTL*, using `defmt`
 
 
-## [🔊 Task 3: Sing my own tune](./src/bin/sing.rs)
+## [🔊🎼 Task 3: Sing my own tune](./src/bin/sing.rs)
+
+![img](https://t4.ftcdn.net/jpg/05/29/82/97/360_F_529829756_PQ1ar8Wel6Xdd29S9XKQkw2Rv4PiZUHD.jpg)
+
+However, computers and microcontrollers only understand
+[**digital signals**](https://rust.ipworkshop.ro/assets/images/digital_signal-fb5afef385984f5a23322d339559c85d.png),
+which are **square** and **discrete waves**, a sequence of binary values, 0s and 1s, HIGH VOLTAGE/LOW VOLTAGE.
+
+To bridge this gap, the microcontroller (MCU) uses a clever trick:
+it rapidly switches between high and low voltages to mimic the frequency of the sound.
+This process called [**PWM** (Pulse Width Modulation)](https://rust.ipworkshop.ro/assets/images/pulse-width-modulation-signal-diagrams-average-e8f71f3620c486efcdefc7756a750c3b.png)
+**simulates an analog signal**,
+allowing the MCU to produce music using digital signals!
+
+Using **PWM**, I managed to play the entire **solfège scale** (**Do-Re-Mi-Fa-Sol-La-Si-Do**):
 
 
-<!-- TODO: describe it! -->
+
+- Hardware:
+  - I connected the General Purpose pin 2 (**GP2**) of the Rasberry Pi Pico to the buzzer's pin with a jumper wire
+- Software:
+  - Configure and **activate buzzer** and the **PWM** pin associated to it
+  - For each note in the octave:
+    - Compute its duration (so I know how much I should adjust the PWM)
+    - Compute `top`, how long one full PWM cycle lasts:
+        ```rs
+        top = CLOCK_FREQ / (PWM_DIV * note_frequency) - 1
+        ```
+    - Reconfigure and PWM and activate the buzzer using this `top` variable
+    - Play the sound for 90% of the time
+    - Turn the buzzer off for the rest of 10% of the time (before playing the next note)
+
+
+
+# Useful links
+
+
+- [Rasberry Pi Pico pins layout](https://rust.ipworkshop.ro/assets/images/pico2w-pinout-49532ea10ab0caedc6a6f21d1bf504bf.svg)
+- [Board](https://rust.ipworkshop.ro/assets/images/lab_board-3fa09dc706781d6e6c7126212ca9d240.png)
+- [Rust Workshop - embassy](https://rust.ipworkshop.ro/docs/embassy)
+- [PM Rust](https://pmrust.pages.upb.ro/)
