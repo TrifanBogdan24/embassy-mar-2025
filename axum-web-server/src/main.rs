@@ -1,6 +1,7 @@
 pub mod routes;
 
 use axum;
+mod metrics;
 
 #[tokio::main]
 async fn main() {
