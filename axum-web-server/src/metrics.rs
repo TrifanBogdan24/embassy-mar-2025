@@ -129,8 +129,18 @@ pub struct Disk {
 
 impl Disk {
     pub fn generate(_sys: &sysinfo::System) -> Vec<Self> {
-        // TODO implement it
-        vec![]
+        let disks = sysinfo::Disks::new_with_refreshed_list();
+        
+        // Iterate through each disk and collect its data into the Disk struct
+        disks.list()
+            .iter()
+            .map(|disk| Self {
+                name: disk.name().to_string_lossy().to_string(),
+                available_space: disk.available_space(),
+                total_space: disk.total_space(),
+                is_removable: disk.is_removable(),
+            })
+            .collect()
     }
 }
 
