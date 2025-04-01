@@ -1,4 +1,7 @@
-use axum::{Router, http::StatusCode, response::IntoResponse, routing::get};
+use axum::{
+    Router, http::StatusCode,
+    response::IntoResponse, routing::get
+};
 
 pub fn register() -> Router {
     Router::new().route("/", get(health_check))

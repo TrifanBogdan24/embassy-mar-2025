@@ -1,20 +1,23 @@
-use axum::{Router, extract::Path, http::StatusCode, response::{IntoResponse, Json}, routing::get};
+use axum::{
+    Router, extract::Path, http::StatusCode,
+    response::{IntoResponse, Json}, routing::get
+};
 use crate::metrics::{self, Summary, Kind};
 
 
 pub fn register() -> Router {
     Router::new()
-        .route("/", get(get_metrics))
-        .route("/{kind}", get(get_metric))
+        .route("/", get(get_all_metrics))
+        .route("/{kind}", get(get_specific_metric))
 }
 
-async fn get_metrics() -> impl IntoResponse {
+async fn get_all_metrics() -> impl IntoResponse {
     let mut sys = metrics::init().await;
     let summary = Summary::generate(&mut sys);
     (StatusCode::OK, Json(summary))
 }
 
-async fn get_metric(Path(kind): Path<metrics::Kind>) -> impl IntoResponse {
+async fn get_specific_metric(Path(kind): Path<metrics::Kind>) -> impl IntoResponse {
     let sys = metrics::init().await;
     let response: serde_json::Value = match kind {
         metrics::Kind::System => {
